@@ -196,7 +196,7 @@ npm run test
 npm run test:coverage
 ```
 
-**58 tests / 8 suites** covering the scoring engine, tier classification, behavior tags, formatting utilities, and UI primitives (TierBadge, PnLTag, StatCard, ScoreBar).
+**79 tests / 11 suites** covering the scoring engine, tier classification, behavior tags, formatting utilities, and UI primitives (TierBadge, PnLTag, StatCard, ScoreBar).
 
 ## 📁 Project Structure
 
@@ -222,11 +222,7 @@ tests/                # Jest + RTL suites
 
 ## 🌐 Live Demo
 
-`[your-project.vercel.app]`
-
-## 🎥 Demo Video
-
-`[YouTube/Loom link — ≤ 3 minutes]`
+**https://perplex-delta.vercel.app**
 
 ## 📄 License
 
