@@ -96,7 +96,7 @@ export default function LiquidationFeed({ events: eventsProp, market, title = 'R
                 className="flex w-full items-center gap-3 rounded-lg border border-danger/20 bg-surface2 px-3 py-2 text-left transition-colors duration-150 hover:border-danger/50"
               >
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <TierBadge tier={event.tier} />
                     <span className="tabular truncate text-[12px] font-medium text-textPrimary">
                       {event.shortAddress}

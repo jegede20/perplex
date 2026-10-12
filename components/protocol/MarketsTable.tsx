@@ -73,7 +73,7 @@ export default function MarketsTable({ markets: marketsProp, loading: loadingPro
   }
 
   return (
-    <div className="card-surface overflow-x-auto">
+    <div className="relative card-surface overflow-x-auto">
       <table className="w-full min-w-[860px] text-left text-[13px]">
         <thead>
           <tr className="border-b border-border text-[11px] uppercase tracking-wider text-textMuted">

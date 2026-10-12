@@ -68,7 +68,7 @@ export default function Leaderboard({
   );
 
   return (
-    <div className="card-surface overflow-x-auto">
+    <div className="relative card-surface overflow-x-auto">
       {showHeader && (
         <div className="flex items-center justify-between px-4 pb-2 pt-4">
           <h3 className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-widest text-textSecondary">

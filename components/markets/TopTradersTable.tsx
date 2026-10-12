@@ -44,7 +44,7 @@ export default function TopTradersTable({ traders, positions = [], markPrice = 0
   }
 
   return (
-    <div className="card-surface overflow-x-auto">
+    <div className="relative card-surface overflow-x-auto">
       <div className="px-4 pb-2 pt-4">
         <h3 className="text-[13px] font-semibold uppercase tracking-widest text-textSecondary">
           Top Traders

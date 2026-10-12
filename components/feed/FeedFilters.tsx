@@ -35,7 +35,7 @@ export default function FeedFilters({ value, onChange }: FeedFiltersProps) {
   return (
     <div className="card-surface flex flex-wrap items-center gap-3 p-3">
       {/* Market */}
-      <div className="flex items-center gap-1">
+      <div className="flex flex-wrap items-center gap-1">
         <span className="mr-1 text-[10px] uppercase tracking-wider text-textMuted">Market</span>
         {MARKET_OPTIONS.map((m) => (
           <button

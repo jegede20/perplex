@@ -78,7 +78,7 @@ export default function OpenPositions({
   }
 
   return (
-    <div className="card-surface overflow-x-auto">
+    <div className="relative card-surface overflow-x-auto">
       <div className="flex items-center justify-between px-4 pb-2 pt-4">
         <h3 className="text-[13px] font-semibold uppercase tracking-widest text-textSecondary">
           Open Positions
