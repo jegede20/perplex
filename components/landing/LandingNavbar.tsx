@@ -43,7 +43,7 @@ export default function LandingNavbar() {
         <div className="flex items-center gap-2">
           <Link
             href="/app"
-            className="rounded-lg bg-primary px-5 py-2.5 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary/90"
+            className="hidden rounded-lg bg-primary px-5 py-2.5 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary/90 md:inline-flex"
           >
             Launch App →
           </Link>
@@ -74,6 +74,13 @@ export default function LandingNavbar() {
               {link.label}
             </a>
           ))}
+          <Link
+            href="/app"
+            onClick={() => setOpen(false)}
+            className="mt-2 block rounded-lg bg-primary px-5 py-2.5 text-center text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary/90"
+          >
+            Launch App →
+          </Link>
         </nav>
       )}
     </header>

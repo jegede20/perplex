@@ -222,7 +222,7 @@ tests/                # Jest + RTL suites
 
 ## 🌐 Live Demo
 
-**https://perplex-delta.vercel.app**
+**https://perplex-live.vercel.app**
 
 ## 📄 License
 
