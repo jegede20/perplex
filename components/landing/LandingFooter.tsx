@@ -17,15 +17,15 @@ const PRODUCT_LINKS = [
 
 const RESOURCE_LINKS = [
   {
-    href: 'https://github.com/perplex-protocol/perplex',
+    href: 'https://github.com/jegede20/perplex',
     label: 'GitHub Repository',
   },
   {
-    href: 'https://github.com/perplex-protocol/perplex/blob/main/LICENSE',
+    href: 'https://github.com/jegede20/perplex/blob/main/LICENSE',
     label: 'MIT License',
   },
   {
-    href: 'https://github.com/perplex-protocol/perplex#readme',
+    href: 'https://github.com/jegede20/perplex#readme',
     label: 'Documentation',
   },
 ];
@@ -74,7 +74,7 @@ export default function LandingFooter() {
           </p>
           <div className="mt-4 flex gap-3">
             <a
-              href="https://github.com/perplex-protocol/perplex"
+              href="https://github.com/jegede20/perplex"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"

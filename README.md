@@ -161,7 +161,7 @@ Score (0–100) = Win Rate × 0.40        (max 40 pts)
 ## 🚀 Getting Started
 
 ```bash
-git clone https://github.com/perplex-protocol/perplex
+git clone https://github.com/jegede20/perplex
 cd perplex
 npm install
 cp .env.example .env.local

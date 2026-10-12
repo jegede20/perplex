@@ -104,7 +104,7 @@ export default function Sidebar() {
             Built on Monad <ExternalLink size={11} aria-hidden />
           </a>
           <a
-            href="https://github.com/perplex-protocol/perplex"
+            href="https://github.com/jegede20/perplex"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 transition-colors duration-150 hover:text-primary"

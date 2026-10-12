@@ -18,7 +18,7 @@ export default function Footer() {
           <span className="font-semibold text-textSecondary">Perplex</span>
           <span aria-hidden>·</span>
           <a
-            href="https://github.com/perplex-protocol/perplex/blob/main/LICENSE"
+            href="https://github.com/jegede20/perplex/blob/main/LICENSE"
             target="_blank"
             rel="noopener noreferrer"
             className="transition-colors duration-150 hover:text-primary"
@@ -44,7 +44,7 @@ export default function Footer() {
         {/* Right */}
         <div className="flex items-center gap-3">
           <a
-            href="https://github.com/perplex-protocol/perplex"
+            href="https://github.com/jegede20/perplex"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Perplex on GitHub (opens in a new tab)"
