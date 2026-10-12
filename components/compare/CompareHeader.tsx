@@ -60,7 +60,7 @@ function WalletPanel({ wallet, side }: { wallet: WalletProfile; side: 'A' | 'B' 
       </div>
 
       <div className="mt-4 space-y-2">
-        <MetricRow label="Win Rate" value={formatPercent(wallet.winRate)} valueClassName="text-success" />
+        <MetricRow label="Win Rate" value={formatPercent(wallet.winRate / 100)} valueClassName="text-success" />
         <MetricRow
           label="Realized PnL"
           value={formatPnL(wallet.realizedPnl)}
