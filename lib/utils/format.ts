@@ -187,6 +187,19 @@ export function formatChartDate(date: string): string {
 }
 
 /**
+ * Axis label for intraday series: bucket timestamps render as
+ * "2am"/"2pm" (UTC-based so server and client axes always agree).
+ * Use with recharts via `tickFormatter={(d) => formatIntradayLabel(d)}`.
+ */
+export function formatIntradayLabel(date: string): string {
+  const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return date;
+  const hours = d.getUTCHours();
+  const h12 = hours % 12 === 0 ? 12 : hours % 12;
+  return `${h12}${hours < 12 ? 'am' : 'pm'}`;
+}
+
+/**
  * Validate an EVM address (0x + 40 hex chars)
  */
 export function isValidAddress(address: string): boolean {

@@ -87,6 +87,25 @@ function mulberry32(seed: number): () => number {
   };
 }
 
+// ─── shared protocol card/chart math ───────────────────────────────
+// Stat cards and chart series MUST derive from these same helpers so a
+// value shown on a card always matches the chart drawn beside it.
+
+const FEES_RATE = 0.0004;
+const ACTIVE_TRADERS_TODAY = 1_842;
+
+function rangeVolumeTotals(volume24h: number): {
+  volume7d: number;
+  volume30d: number;
+  volumeAllTime: number;
+} {
+  return {
+    volume7d: volume24h * 6.4,
+    volume30d: volume24h * 26.8,
+    volumeAllTime: volume24h * 26.8 * 4.1,
+  };
+}
+
 function hashString(value: string): number {
   let h = 2166136261;
   for (let i = 0; i < value.length; i += 1) {
@@ -890,9 +909,7 @@ export async function getProtocolStats(range: TimeRange = '24H'): Promise<Protoc
   const summaries = await getMarketsOverview();
 
   const volume24h = summaries.reduce((s, m) => s + m.volume24h, 0);
-  const volume7d = volume24h * 6.4;
-  const volume30d = volume24h * 26.8;
-  const volumeAllTime = volume30d * 4.1;
+  const { volume7d, volume30d, volumeAllTime } = rangeVolumeTotals(volume24h);
   const openInterest = summaries.reduce((s, m) => s + m.openInterest, 0);
 
   // live insurance fund + OI overlay
@@ -927,8 +944,8 @@ export async function getProtocolStats(range: TimeRange = '24H'): Promise<Protoc
   }
 
   const liqStats = summarizeLiquidations(universe.liquidations);
-  const activeTradersToday = 1_842;
-  const fees24h = volume24h * 0.0004;
+  const activeTradersToday = ACTIVE_TRADERS_TODAY;
+  const fees24h = volume24h * FEES_RATE;
   const fees7d = fees24h * 6.4;
   const fees30d = fees24h * 26.8;
 
@@ -957,47 +974,63 @@ export async function getProtocolStats(range: TimeRange = '24H'): Promise<Protoc
 
   persistSnapshots(summaries, stats);
 
-  // range-aware volume override for the headline card
-  if (range === '7D') stats.volume24h = stats.volume7d / 6.4;
   return stats;
 }
 
 export async function getProtocolChartSeries(range: TimeRange = '30D'): Promise<ProtocolChartPoint[]> {
-  const marketStates = getMarketStates();
-  const universe = getUniverse();
-  const days = range === '24H' ? 1 : range === '7D' ? 7 : range === '30D' ? 30 : 30;
+  // Same source of truth as getProtocolStats(): live market summaries.
+  const summaries = await getMarketsOverview();
+  const volume24h = summaries.reduce((s, m) => s + m.volume24h, 0);
+  const { volume7d, volume30d, volumeAllTime } = rangeVolumeTotals(volume24h);
+  const openInterest = summaries.reduce((s, m) => s + m.openInterest, 0);
+  const oiLong = summaries.reduce((s, m) => s + m.openInterestLong, 0);
+  const oiShort = summaries.reduce((s, m) => s + m.openInterestShort, 0);
+
+  const is24h = range === '24H';
+  const bucketCount = is24h ? 12 : range === '7D' ? 7 : 30;
+  const rangeVolume =
+    range === '24H' ? volume24h : range === '7D' ? volume7d : range === '30D' ? volume30d : volumeAllTime;
+
+  // Deterministic intraday/day shape — magnitudes come exclusively from
+  // the live summaries above, then each bucket is normalized so the
+  // series sums to the exact range total shown on the stat cards.
+  const shape = mulberry32(hashString(`perpl-chart-${range}-${daysAgoIso(0).slice(0, 10)}`));
+  const weights: number[] = [];
+  for (let i = 0; i < bucketCount; i += 1) weights.push(0.72 + shape() * 0.56);
+  const wSum = weights.reduce((s, w) => s + w, 0);
+  const wAvg = wSum / bucketCount;
 
   const points: ProtocolChartPoint[] = [];
-  for (let d = days; d >= (range === '24H' ? 0 : 1); d -= 1) {
-    const date = daysAgoIso(d).slice(0, 10);
-    let volume = 0;
-    let openInterest = 0;
-    let liquidations = 0;
-    for (const state of marketStates.values()) {
-      const v = state.volumeHistory[state.volumeHistory.length - d] ?? state.volumeHistory[state.volumeHistory.length - 1];
-      const o = state.oiHistory[state.oiHistory.length - d] ?? state.oiHistory[state.oiHistory.length - 1];
-      volume += v?.volume ?? 0;
-      openInterest += o?.totalOI ?? 0;
-      liquidations += Math.round((v?.trades ?? 0) * 0.002);
-    }
+  for (let i = 0; i < bucketCount; i += 1) {
+    const last = i === bucketCount - 1;
+    const w = weights[i];
+    const date = is24h
+      ? daysAgoIso(0, (bucketCount - 1 - i) * 2)
+      : daysAgoIso(bucketCount - 1 - i).slice(0, 10);
+    const volume = rangeVolume * (w / wSum);
+    const oiFactor = last ? 1 : Math.min(1.15, Math.max(0.85, 0.9 + 0.2 * (w / wAvg)));
     points.push({
       date,
       volume,
-      openInterest,
-      activeUsers: Math.round(1_200 + (volume / 1_000_000) * 22),
-      fees: volume * 0.0004,
-      liquidations,
+      openInterest: last ? openInterest : openInterest * oiFactor,
+      oiLong: last ? oiLong : oiLong * oiFactor,
+      oiShort: last ? oiShort : oiShort * oiFactor,
+      activeUsers: last ? ACTIVE_TRADERS_TODAY : Math.round(ACTIVE_TRADERS_TODAY * (0.7 + 0.6 * (w / wAvg))),
+      fees: volume * FEES_RATE,
+      liquidations: Math.round(volume / 750_000),
     });
   }
 
   if (points.length === 0) {
     points.push({
       date: daysAgoIso(0).slice(0, 10),
-      volume: universe.wallets.reduce((s, w) => s + w.profile.totalVolume / 30, 0),
-      openInterest: 28_600_000,
-      activeUsers: 1_842,
-      fees: 28_400,
-      liquidations: 47,
+      volume: volume24h,
+      openInterest,
+      oiLong,
+      oiShort,
+      activeUsers: ACTIVE_TRADERS_TODAY,
+      fees: volume24h * FEES_RATE,
+      liquidations: 0,
     });
   }
   return points;

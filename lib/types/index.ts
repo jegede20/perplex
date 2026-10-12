@@ -53,6 +53,10 @@ export interface ProtocolChartPoint {
   date: string;
   volume: number;
   openInterest: number;
+  /** Long-side open interest in USD — same source as the OI stat card. */
+  oiLong: number;
+  /** Short-side open interest in USD — same source as the OI stat card. */
+  oiShort: number;
   activeUsers: number;
   fees: number;
   liquidations: number;

@@ -42,11 +42,7 @@ export default function ProtocolStats({ stats, range, loading, oiLong, oiShort, 
       <StatCard
         label="Total Volume"
         value={formatUSD(volumeForRange)}
-        subValue={
-          volumeChange !== undefined
-            ? `${volumeChange >= 0 ? '+' : ''}${volumeChange.toFixed(1)}% vs previous period`
-            : undefined
-        }
+        subValue={volumeChange !== undefined ? 'vs previous period' : undefined}
         change={volumeChange}
         highlight="PURPLE"
         icon={<BarChart3 size={16} aria-hidden />}

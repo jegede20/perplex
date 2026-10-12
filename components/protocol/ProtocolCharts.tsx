@@ -14,7 +14,7 @@ import {
 } from 'recharts';
 import type { ProtocolChartPoint, TimeRange } from '@/lib/types';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
-import { formatChartDate, formatUSD } from '@/lib/utils/format';
+import { formatChartDate, formatIntradayLabel, formatUSD } from '@/lib/utils/format';
 
 export interface ProtocolChartsProps {
   points: ProtocolChartPoint[];
@@ -81,7 +81,7 @@ export default function ProtocolCharts({ points, range, loading }: ProtocolChart
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={points} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
-              <XAxis dataKey="date" tickFormatter={formatChartDate} tick={AXIS} tickLine={false} axisLine={{ stroke: GRID_STROKE }} />
+              <XAxis dataKey="date" tickFormatter={(d: string) => (range === '24H' ? formatIntradayLabel(d) : formatChartDate(d))} tick={AXIS} tickLine={false} axisLine={{ stroke: GRID_STROKE }} />
               <YAxis tickFormatter={(v: number) => formatUSD(v)} tick={AXIS} tickLine={false} axisLine={false} width={52} />
               <Tooltip
                 content={<ChartTooltip formatter={(v) => formatUSD(v)} />}
@@ -105,12 +105,14 @@ export default function ProtocolCharts({ points, range, loading }: ProtocolChart
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={points} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
-              <XAxis dataKey="date" tickFormatter={formatChartDate} tick={AXIS} tickLine={false} axisLine={{ stroke: GRID_STROKE }} />
+              <XAxis dataKey="date" tickFormatter={(d: string) => (range === '24H' ? formatIntradayLabel(d) : formatChartDate(d))} tick={AXIS} tickLine={false} axisLine={{ stroke: GRID_STROKE }} />
               <YAxis tickFormatter={(v: number) => formatUSD(v)} tick={AXIS} tickLine={false} axisLine={false} width={52} />
+              <YAxis yAxisId="right" orientation="right" tickFormatter={(v: number) => formatUSD(v)} tick={AXIS} tickLine={false} axisLine={false} width={52} />
               <Tooltip content={<ChartTooltip formatter={(v) => formatUSD(v)} />} />
               <Legend wrapperStyle={{ fontSize: 11, color: '#A0A0B8' }} />
-              <Line type="monotone" dataKey="openInterest" name="Total OI" stroke="#7B5EA7" strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="fees" name="Fees" stroke="#22C55E" strokeWidth={1.5} dot={false} />
+              <Line type="monotone" dataKey="oiLong" name="OI Long" stroke="#22C55E" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="oiShort" name="OI Short" stroke="#EF4444" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="fees" name="Fees" yAxisId="right" stroke="#7B5EA7" strokeWidth={1.5} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -128,7 +130,7 @@ export default function ProtocolCharts({ points, range, loading }: ProtocolChart
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={points} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
-              <XAxis dataKey="date" tickFormatter={formatChartDate} tick={AXIS} tickLine={false} axisLine={{ stroke: GRID_STROKE }} />
+              <XAxis dataKey="date" tickFormatter={(d: string) => (range === '24H' ? formatIntradayLabel(d) : formatChartDate(d))} tick={AXIS} tickLine={false} axisLine={{ stroke: GRID_STROKE }} />
               <YAxis tick={AXIS} tickLine={false} axisLine={false} width={44} />
               <Tooltip
                 content={<ChartTooltip formatter={(v) => v.toLocaleString('en-US')} />}
