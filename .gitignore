@@ -43,3 +43,9 @@ next-env.d.ts
 # local tooling + user uploads
 .config/
 uploads/
+
+# platform + local tooling artifacts
+.arena/
+.cache/
+.local/
+.sudo_as_admin_successful
