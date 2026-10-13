@@ -97,7 +97,6 @@ function mulberry32(seed: number): () => number {
 }
 
 const DEMO_LIQ_MARKETS: Market[] = ['BTC', 'ETH', 'SOL', 'MON', 'HYPE', 'ZEC'];
-const DEMO_LIQ_TIERS: WalletTier[] = ['WHALE', 'SHARK', 'FISH'];
 
 /**
  * Generate a deterministic liquidation feed (demo mode).

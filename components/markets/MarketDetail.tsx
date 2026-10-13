@@ -14,7 +14,6 @@ import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 import {
   Activity,
   BarChart3,
-  Coins,
   DollarSign,
   Percent,
   Zap,
@@ -203,7 +202,7 @@ import { formatChartDate } from '@/lib/utils/format';
 
 function OIHistoryChart({ points }: { points: OIPoint[] }) {
   return (
-    <div className="h-[190px] w-full">
+    <div className="h-[190px] w-full min-w-0">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={points} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
           <defs>
@@ -233,7 +232,7 @@ function OIHistoryChart({ points }: { points: OIPoint[] }) {
 
 function VolumeHistoryChart({ points }: { points: VolumePoint[] }) {
   return (
-    <div className="h-[170px] w-full">
+    <div className="h-[170px] w-full min-w-0">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={points} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#2A2A3D" vertical={false} />

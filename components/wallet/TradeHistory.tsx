@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils/cn';
 import {
   formatDuration,
   formatLeverage,
-  formatPercent,
   formatPrice,
   formatUSD,
   getMonadScanTxUrl,
@@ -37,7 +36,7 @@ const STATUS_STYLE: Record<TradeStatus, string> = {
 };
 
 /** Full trade history: status filters, column sorting, 15 rows/page. */
-export default function TradeHistory({ trades, loading }: TradeHistoryProps) {
+export default function TradeHistory({ trades }: TradeHistoryProps) {
   const [filter, setFilter] = useState<StatusFilter>('ALL');
   const [page, setPage] = useState(0);
   const [sortKey, setSortKey] = useState<SortKey>('timestamp');
@@ -120,7 +119,7 @@ export default function TradeHistory({ trades, loading }: TradeHistoryProps) {
       {rows.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-1 p-10 text-center">
           <p className="text-[13px] text-textSecondary">No trades match this filter</p>
-          <p className="text-[11px] text-textMuted">Try "All" or a different status.</p>
+          <p className="text-[11px] text-textMuted">Try &ldquo;All&rdquo; or a different status.</p>
         </div>
       ) : (
         <table className="w-full min-w-[960px] text-left text-[12px]">

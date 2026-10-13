@@ -93,7 +93,7 @@ export default function SentimentHistory({ points, loading }: SentimentHistoryPr
         />
       </div>
 
-      <div className="mt-4 h-[320px] w-full">
+      <div className="mt-4 h-[320px] w-full min-w-0">
         {loading ? (
           <div className="flex h-full items-center justify-center text-[12px] text-textMuted">
             Loading sentiment history…

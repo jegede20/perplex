@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import type { CascadeDirection } from '@/lib/liquidation/mapBuilder';
 import { calculateCascadeRisk } from '@/lib/liquidation/mapBuilder';
-import type { CascadeRiskLevel, LiquidationCluster, LiquidationMapData } from '@/lib/types';
+import type { CascadeRiskLevel, LiquidationMapData } from '@/lib/types';
 import { formatPercent, formatPrice, formatUSD } from '@/lib/utils/format';
 import { cn } from '@/lib/utils/cn';
 

@@ -36,6 +36,7 @@ export interface ProtocolStats {
   fees24h: number;
   fees7d: number;
   fees30d: number;
+  feesAllTime: number;
   activeTradersToday: number;
   activeTraders7d: number;
   activeTraders30d: number;

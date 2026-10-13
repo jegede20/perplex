@@ -1,13 +1,24 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { MarketSummary } from '@/lib/types';
+import { ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react';
 import MarketBadge from '@/components/ui/MarketBadge';
 import SentimentBar from '@/components/ui/SentimentBar';
 import ChangeArrow from '@/components/ui/ChangeArrow';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 import { formatFundingRate, formatAPRCompact, formatPrice, formatUSD, formatNumber } from '@/lib/utils/format';
+
+type SortKey =
+  | 'symbol'
+  | 'markPrice'
+  | 'openInterest'
+  | 'fundingRate'
+  | 'longPercent'
+  | 'volume24h'
+  | 'liquidations24h'
+  | 'whaleCount';
 
 export interface MarketsTableProps {
   markets?: MarketSummary[] | null;
@@ -44,6 +55,32 @@ export default function MarketsTable({ markets: marketsProp, loading: loadingPro
     };
   }, [marketsProp]);
 
+  const [sortKey, setSortKey] = useState<SortKey>('volume24h');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+
+  const toggleSort = useCallback((key: SortKey) => {
+    setSortKey((current) => {
+      if (current === key) {
+        setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+        return current;
+      }
+      setSortDir(key === 'symbol' ? 'asc' : 'desc');
+      return key;
+    });
+  }, []);
+
+  const sorted = useMemo(() => {
+    return [...markets].sort((a, b) => {
+      const va = a[sortKey];
+      const vb = b[sortKey];
+      const cmp =
+        typeof va === 'string' || typeof vb === 'string'
+          ? String(va).localeCompare(String(vb))
+          : Number(va) - Number(vb);
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+  }, [markets, sortKey, sortDir]);
+
   const handleRowClick = useCallback(
     (symbol: string) => {
       router.push(`/app/markets/${symbol}`);
@@ -77,18 +114,44 @@ export default function MarketsTable({ markets: marketsProp, loading: loadingPro
       <table className="w-full min-w-[860px] text-left text-[13px]">
         <thead>
           <tr className="border-b border-border text-[11px] uppercase tracking-wider text-textMuted">
-            <th scope="col" className="px-4 py-3 font-semibold">Market</th>
-            <th scope="col" className="px-4 py-3 font-semibold">Price</th>
-            <th scope="col" className="px-4 py-3 font-semibold">OI (L/S)</th>
-            <th scope="col" className="px-4 py-3 font-semibold">Funding</th>
-            <th scope="col" className="px-4 py-3 font-semibold">L/S Skew</th>
-            <th scope="col" className="px-4 py-3 font-semibold">Volume 24h</th>
-            <th scope="col" className="px-4 py-3 font-semibold">Liq 24h</th>
-            <th scope="col" className="px-4 py-3 font-semibold">Whales</th>
+            {([
+              ['symbol', 'Market'],
+              ['markPrice', 'Price'],
+              ['openInterest', 'OI (L/S)'],
+              ['fundingRate', 'Funding'],
+              ['longPercent', 'L/S Skew'],
+              ['volume24h', 'Volume 24h'],
+              ['liquidations24h', 'Liq 24h'],
+              ['whaleCount', 'Whales'],
+            ] as Array<[SortKey, string]>).map(([key, label]) => (
+              <th
+                key={key}
+                scope="col"
+                aria-sort={sortKey === key ? (sortDir === 'asc' ? 'ascending' : 'descending') : undefined}
+                className="px-4 py-3 font-semibold"
+              >
+                <button
+                  type="button"
+                  onClick={() => toggleSort(key)}
+                  className="inline-flex items-center gap-1 uppercase tracking-wider transition-colors duration-150 hover:text-textPrimary"
+                >
+                  {label}
+                  {sortKey === key ? (
+                    sortDir === 'asc' ? (
+                      <ChevronUp size={12} aria-hidden />
+                    ) : (
+                      <ChevronDown size={12} aria-hidden />
+                    )
+                  ) : (
+                    <ChevronsUpDown size={12} className="opacity-40" aria-hidden />
+                  )}
+                </button>
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {markets.map((m) => (
+          {sorted.map((m) => (
             <tr
               key={m.symbol}
               tabIndex={0}

@@ -35,10 +35,16 @@ export default function ProtocolStats({ stats, range, loading, oiLong, oiShort, 
   const volumeForRange =
     range === '7D' ? stats.volume7d : range === '30D' ? stats.volume30d : range === 'ALL' ? stats.volumeAllTime : stats.volume24h;
   const feesForRange =
-    range === '7D' ? stats.fees7d : range === '30D' ? stats.fees30d : stats.fees24h;
+    range === '7D'
+      ? stats.fees7d
+      : range === '30D'
+        ? stats.fees30d
+        : range === 'ALL'
+          ? stats.feesAllTime
+          : stats.fees24h;
 
   return (
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <div className="grid min-w-0 grid-cols-2 gap-3 lg:grid-cols-4 [&>*]:min-w-0">
       <StatCard
         label="Total Volume"
         value={formatUSD(volumeForRange)}

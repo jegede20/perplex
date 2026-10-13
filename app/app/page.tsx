@@ -38,9 +38,11 @@ export default function HomePage() {
   const [data, setData] = useState<ProtocolResponse | null>(null);
   const [markets, setMarkets] = useState<MarketSummary[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
+    setError(false);
     try {
       const [protocolRes, marketsRes] = await Promise.all([
         fetch(`/api/protocol?range=${range}`),
@@ -50,8 +52,9 @@ export default function HomePage() {
       const marketsJson = (await marketsRes.json()) as { markets?: MarketSummary[] };
       setData(json);
       if (marketsJson.markets) setMarkets(marketsJson.markets);
-    } catch (error) {
-      console.error('[HomePage]', error);
+    } catch (err) {
+      console.error('[HomePage]', err);
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -60,6 +63,26 @@ export default function HomePage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  if (error && data === null && !loading) {
+    return (
+      <ErrorBoundary label="Protocol Overview">
+        <div className="card-surface flex flex-col items-center justify-center gap-3 p-12 text-center">
+          <p className="text-[15px] font-semibold text-textPrimary">Couldn&apos;t load protocol data</p>
+          <p className="text-[12px] text-textMuted">
+            The data API didn&apos;t respond. Check your connection and try again.
+          </p>
+          <button
+            type="button"
+            onClick={() => void load()}
+            className="rounded-lg bg-primary px-6 py-2 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary/90"
+          >
+            Retry
+          </button>
+        </div>
+      </ErrorBoundary>
+    );
+  }
 
   return (
     <ErrorBoundary label="Protocol Overview">
@@ -102,16 +125,16 @@ export default function HomePage() {
         <SentimentMiniWidget />
 
         {/* Row 3: charts (65%) + live feed (35%) */}
-        <div className="flex flex-col gap-4 xl:flex-row">
-          <div className="space-y-4 xl:w-[65%]">
+        <div className="flex min-w-0 flex-col gap-4 xl:flex-row">
+          <div className="min-w-0 space-y-4 xl:w-[65%]">
             <ProtocolCharts points={data?.chart ?? []} range={range} loading={loading} />
             <NetFlows points={data?.flows ?? []} loading={loading} />
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="grid min-w-0 gap-4 lg:grid-cols-2 [&>*]:min-w-0">
               <InsuranceFund stats={data?.stats ?? null} />
               <LiquidationFeed limit={8} title="Protocol Liquidations" />
             </div>
           </div>
-          <div className="xl:w-[35%]">
+          <div className="min-w-0 xl:w-[35%]">
             <LiveFeedPanel />
           </div>
         </div>

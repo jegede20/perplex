@@ -52,7 +52,7 @@ export default function LiquidationMapChart({
   }));
 
   return (
-    <div className="relative overflow-x-auto">
+    <div className="relative w-full min-w-0 overflow-x-auto">
       <div className="min-w-[640px]">
         <ResponsiveContainer width="100%" height={400}>
           <ComposedChart data={rows} margin={{ top: 20, right: 30, bottom: 40, left: 60 }}>

@@ -31,7 +31,6 @@ import {
   computeNetFlows,
   generateDemoNetFlows,
   generateDemoWalletFlows,
-  netFlowInWindow,
 } from '@/lib/protocol/flows';
 import type {
   BehaviorTag,
@@ -904,7 +903,7 @@ function persistWalletProfile(profile: WalletProfile, existing: WalletProfile | 
 
 // ─── exported: protocol stats ──────────────────────────────────────
 
-export async function getProtocolStats(range: TimeRange = '24H'): Promise<ProtocolStats> {
+export async function getProtocolStats(_range: TimeRange = '24H'): Promise<ProtocolStats> {
   const universe = getUniverse();
   const summaries = await getMarketsOverview();
 
@@ -948,6 +947,7 @@ export async function getProtocolStats(range: TimeRange = '24H'): Promise<Protoc
   const fees24h = volume24h * FEES_RATE;
   const fees7d = fees24h * 6.4;
   const fees30d = fees24h * 26.8;
+  const feesAllTime = volumeAllTime * FEES_RATE;
 
   const stats: ProtocolStats = {
     volume24h,
@@ -959,6 +959,7 @@ export async function getProtocolStats(range: TimeRange = '24H'): Promise<Protoc
     fees24h,
     fees7d,
     fees30d,
+    feesAllTime,
     activeTradersToday,
     activeTraders7d: 3_241,
     activeTraders30d: 7_846,

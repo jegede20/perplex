@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 import { Github, Zap, X } from 'lucide-react';
 import { useLiveBlockNumber } from '@/lib/perpl/hooks';

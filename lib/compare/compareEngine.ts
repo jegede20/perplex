@@ -7,7 +7,6 @@
  * tests/compareEngine.test.ts.
  */
 import type {
-  ComparisonMetric,
   ComparisonMetrics,
   ComparisonWinner,
   RadarDataPoint,

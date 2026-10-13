@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import type { SentimentShift } from '@/lib/types';
 import TierBadge from '@/components/ui/TierBadge';
-import { formatTimeAgo, formatUSD } from '@/lib/utils/format';
+import { formatTimeAgo } from '@/lib/utils/format';
 import { cn } from '@/lib/utils/cn';
 
 export interface SentimentShiftsProps {
