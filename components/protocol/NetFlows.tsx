@@ -40,7 +40,7 @@ export default function NetFlows({ points, loading }: NetFlowsProps) {
           {formatPnL(totalNet)} net
         </span>
       </div>
-      <div className="h-[180px] w-full">
+      <div className="h-[180px] w-full min-w-0">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={points} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
             <defs>

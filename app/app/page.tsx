@@ -102,16 +102,16 @@ export default function HomePage() {
         <SentimentMiniWidget />
 
         {/* Row 3: charts (65%) + live feed (35%) */}
-        <div className="flex flex-col gap-4 xl:flex-row">
-          <div className="space-y-4 xl:w-[65%]">
+        <div className="flex min-w-0 flex-col gap-4 xl:flex-row">
+          <div className="min-w-0 space-y-4 xl:w-[65%]">
             <ProtocolCharts points={data?.chart ?? []} range={range} loading={loading} />
             <NetFlows points={data?.flows ?? []} loading={loading} />
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="grid min-w-0 gap-4 lg:grid-cols-2 [&>*]:min-w-0">
               <InsuranceFund stats={data?.stats ?? null} />
               <LiquidationFeed limit={8} title="Protocol Liquidations" />
             </div>
           </div>
-          <div className="xl:w-[35%]">
+          <div className="min-w-0 xl:w-[35%]">
             <LiveFeedPanel />
           </div>
         </div>

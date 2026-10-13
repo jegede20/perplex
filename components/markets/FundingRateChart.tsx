@@ -37,7 +37,7 @@ export default function FundingRateChart({ points, loading }: FundingRateChartPr
         </h3>
         <span className="text-[11px] text-textMuted">8h intervals · 7d</span>
       </div>
-      <div className="h-[200px] w-full">
+      <div className="h-[200px] w-full min-w-0">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#2A2A3D" vertical={false} />

@@ -60,7 +60,7 @@ export default function LiquidationMap({ positions, markPrice, loading, market }
         </div>
       </div>
 
-      <div className="relative h-[210px] w-full border-b border-l border-border">
+      <div className="relative h-[210px] w-full min-w-0 border-b border-l border-border">
         {/* Current mark price line */}
         <div
           className="absolute inset-y-0 z-10 border-l-2 border-dashed border-primary"
