@@ -97,7 +97,12 @@ export function generateDemoWalletFlows(
   for (let i = 0; i < count; i += 1) {
     const isDeposit = rng() > 0.38;
     const amount = Math.round((5_000 + rng() * 120_000) / 100) * 100;
-    const ts = Date.now() - Math.floor(rng() * 45 * 86_400_000);
+    // Newest flows land in the last few hours (top of the desc-sorted
+    // list); older ones keep the 45-day deposit/withdrawal history.
+    const ts =
+      i < 2
+        ? Date.now() - Math.floor(rng() * 3 * 3_600_000) - 5 * 60_000
+        : Date.now() - Math.floor(rng() * 45 * 86_400_000);
     flows.push({
       id: `flow_${walletAddress.slice(2, 10)}_${i}`,
       type: isDeposit ? 'DEPOSIT' : 'WITHDRAWAL',

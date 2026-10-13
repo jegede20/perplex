@@ -218,6 +218,7 @@ function buildTrade(
   rng: () => number,
   walletAddress: string,
   index: number,
+  totalTrades: number,
   archetype: Archetype,
   forceWin: boolean
 ): Trade {
@@ -237,7 +238,18 @@ function buildTrade(
   // Liquidated when the adverse move wipes ~85% of posted margin.
   const marginLossRatio = Math.abs(movePct) * leverage;
   const status: TradeStatus = !forceWin && marginLossRatio >= 0.85 ? 'LIQUIDATED' : 'CLOSED';
-  const ts = Date.now() - Math.floor(rng() * 30 * 86_400_000) - index * 37_000;
+  // Recency tiers: the newest trades (tail of the array after the
+  // ascending sort) land minutes-to-hours ago so last-activity and the
+  // live feed read as current; older trades keep a realistic 30-day
+  // history spread. Exactly one rng() call in every branch keeps the
+  // deterministic story identical.
+  const fromEnd = totalTrades - 1 - index;
+  const ts =
+    fromEnd < 2
+      ? Date.now() - Math.floor(rng() * 55 * 60_000) - 90_000
+      : fromEnd < 5
+        ? Date.now() - Math.floor(rng() * 5.5 * 3_600_000) - 25 * 60_000
+        : Date.now() - Math.floor(rng() * 30 * 86_400_000) - index * 37_000;
 
   return {
     id: `trade_${walletAddress.slice(2, 10)}_${index}`,
@@ -390,7 +402,7 @@ function buildDemoWallet(index: number): DemoWallet {
 
   const trades: Trade[] = [];
   for (let i = 0; i < totalTrades; i += 1) {
-    trades.push(buildTrade(rng, address, i, archetype, outcomes[i]));
+    trades.push(buildTrade(rng, address, i, totalTrades, archetype, outcomes[i]));
   }
   trades.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 
@@ -561,13 +573,19 @@ function buildFeedFromTrades(universe: DemoWallet[]): FeedEvent[] {
 }
 
 let universeCache: DemoUniverse | null = null;
+let universeBornAt = 0;
+/** Rebuild periodically so Date.now()-anchored timestamps stay fresh while
+ *  every rng seed (and therefore the whole story) stays identical. */
+const UNIVERSE_TTL_MS = 5 * 60_000;
 
 function getUniverse(): DemoUniverse {
-  if (universeCache) return universeCache;
+  const now = Date.now();
+  if (universeCache && now - universeBornAt < UNIVERSE_TTL_MS) return universeCache;
   const wallets = ARCHETYPE_MIX.map((_, i) => buildDemoWallet(i));
   const feedEvents = buildFeedFromTrades(wallets);
   const liquidations = generateDemoLiquidations(26, 7331);
   universeCache = { wallets, feedEvents, liquidations };
+  universeBornAt = now;
   return universeCache;
 }
 

@@ -117,7 +117,12 @@ export function generateDemoLiquidations(count = 24, seed = 7331): LiquidationEv
       market === 'BTC' ? 98_000 : market === 'ETH' ? 3_400 : market === 'SOL' ? 185 : market === 'MON' ? 2.8 : market === 'HYPE' ? 42 : 285;
     const price = Number((priceBase * (0.96 + rng() * 0.08)).toFixed(priceBase > 100 ? 2 : 4));
     const loss = Math.round(size * (0.06 + rng() * 0.22));
-    const ts = Date.now() - Math.floor(rng() * 22 * 3_600_000) - 60_000;
+    // First few events land in the last ~25 minutes so the liquidation
+    // feed always has current entries; the rest spread over the last 22h.
+    const ts =
+      i < 3
+        ? Date.now() - Math.floor(rng() * 22 * 60_000) - 25_000
+        : Date.now() - Math.floor(rng() * 22 * 3_600_000) - 60_000;
 
     events.push({
       id: `liq_demo_${seed}_${i}`,
