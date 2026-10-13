@@ -17,13 +17,13 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-surface/95 backdrop-blur">
       <div className="flex h-14 items-center justify-between gap-4 px-4 md:px-6">
-        {/* Left: brand */}
-        <Link href="/app" aria-label="Perplex — app home">
+        {/* Left: brand — mobile only; on desktop the sidebar owns the logo */}
+        <Link href="/app" aria-label="Perplex — app home" className="md:hidden">
           <PerplexLogo size={30} />
         </Link>
 
         {/* Right: network + block + powered-by */}
-        <div className="flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2">
           <span
             className="hidden items-center gap-1.5 rounded-full border border-primary/60 px-2.5 py-1 text-[11px] font-medium text-primary sm:flex"
             title="Monad Mainnet — chain ID 143"
