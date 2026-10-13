@@ -24,6 +24,17 @@ function RailTooltip({ label }: { label: string }) {
   );
 }
 
+function RailTooltip({ label }: { label: string }) {
+  return (
+    <span
+      role="tooltip"
+      className="pointer-events-none absolute left-[calc(100%+10px)] top-1/2 z-[60] -translate-y-1/2 whitespace-nowrap rounded-md border border-border bg-surface2 px-2 py-1 text-[12px] font-medium text-textPrimary opacity-0 shadow-glow-sm transition-opacity duration-150 group-hover:opacity-100"
+    >
+      {label}
+    </span>
+  );
+}
+
 interface SidebarItemProps {
   href: string;
   label: string;
