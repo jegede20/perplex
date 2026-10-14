@@ -7,6 +7,7 @@ import FeedFilters, { type FeedFilterState } from '@/components/feed/FeedFilters
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import LiveDot from '@/components/ui/LiveDot';
+import DemoDataBadge from '@/components/ui/DemoDataBadge';
 import { usePerplWebSocket } from '@/lib/perpl/websocket';
 import { FEED_MAX_EVENTS, FEED_POLL_INTERVAL } from '@/lib/utils/constants';
 
@@ -45,6 +46,8 @@ export default function FeedPage() {
     };
   }, []);
 
+  const [demoData, setDemoData] = useState(true);
+
   const loadEvents = useCallback(async () => {
     try {
       const params = new URLSearchParams({ limit: '100' });
@@ -52,8 +55,11 @@ export default function FeedPage() {
       if (filters.type !== 'ALL') params.set('type', filters.type);
       if (filters.minSize > 0) params.set('minSize', String(filters.minSize));
       const res = await fetch(`/api/feed?${params.toString()}`);
-      const data = (await res.json()) as { events?: FeedEvent[] };
-      if (data.events) setEvents(data.events);
+      const data = (await res.json()) as { events?: FeedEvent[]; dataSource?: 'live' | 'demo' };
+      if (data.events) {
+        setEvents(data.events);
+        setDemoData(data.dataSource !== 'live');
+      }
     } catch (error) {
       console.error('[FeedPage]', error);
     } finally {
@@ -98,7 +104,7 @@ export default function FeedPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="flex items-center gap-2 text-page text-textPrimary">
-              Live Feed <LiveDot />
+              Live Feed <LiveDot /> {demoData && !isConnected && <DemoDataBadge />}
             </h1>
             <p className="text-[12px] text-textMuted">
               Whale opens, closes, flips, and liquidations — streamed from Monad.

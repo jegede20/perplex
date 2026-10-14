@@ -15,6 +15,7 @@ import ComparePnLChart from '@/components/compare/ComparePnLChart';
 import CompareRadar from '@/components/compare/CompareRadar';
 import CompareTradeStyle from '@/components/compare/CompareTradeStyle';
 import ComparePositions from '@/components/compare/ComparePositions';
+import DemoDataBadge from '@/components/ui/DemoDataBadge';
 
 function ComparePageInner() {
   const searchParams = useSearchParams();
@@ -80,6 +81,7 @@ function ComparePageInner() {
           <h1 className="flex items-center gap-2 text-[24px] font-bold text-white">
             <GitCompareArrows size={22} className="text-primary" aria-hidden />
             Compare Wallets
+            {comparison && comparison.dataSource !== 'live' && <DemoDataBadge />}
           </h1>
           <p className="mt-1 text-[13px] text-textMuted">
             Put two smart money wallets head-to-head

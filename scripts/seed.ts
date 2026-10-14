@@ -54,11 +54,21 @@ async function main(): Promise<void> {
   });
 
   console.log('▸ Truncating seeded tables…');
-  for (const table of ['wallet_flows', 'trades', 'feed_events', 'liquidations', 'wallets'] as const) {
-    // every seeded table carries a uuid id PK — delete all rows idempotently
-    const res = await admin.from(table).delete().neq('id', '');
-    if (res.error) console.warn(`  truncate ${table}:`, res.error.message);
-    else console.log(`  ${table} cleared`);
+  // Delete-where-PK-not-null clears each table idempotently. The old
+  // `.neq('id', '')` was invalid against uuid columns (and wallets has no
+  // id at all — its PK is address), so truncation failed silently and
+  // re-seeds appended duplicate rows. Fail loudly instead of appending.
+  const seededTables: ReadonlyArray<readonly [string, string]> = [
+    ['wallet_flows', 'id'],
+    ['trades', 'id'],
+    ['feed_events', 'id'],
+    ['liquidations', 'id'],
+    ['wallets', 'address'],
+  ];
+  for (const [table, pk] of seededTables) {
+    const res = await admin.from(table).delete().not(pk, 'is', null);
+    if (res.error) throw new Error(`truncate ${table} failed: ${res.error.message}`);
+    console.log(`  ${table} cleared`);
   }
 
   const dataset = getSeedDataset();

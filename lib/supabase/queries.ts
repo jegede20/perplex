@@ -168,8 +168,20 @@ function asTags(values: string[] | null): BehaviorTag[] {
 }
 
 function logQueryError(context: string, error: unknown): void {
-  const message = error instanceof Error ? error.message : String(error);
-  console.error(`[perplex/queries] ${context}: ${message}`);
+  const pg = error as { message?: unknown; code?: unknown; details?: unknown } | null;
+  if (error instanceof Error) {
+    console.error(
+      `[perplex/queries] ${context}: ${error.message}${pg?.code ? ` (code ${String(pg.code)})` : ''}${pg?.details ? ` — ${String(pg.details)}` : ''}`
+    );
+    return;
+  }
+  if (pg && typeof pg === 'object') {
+    console.error(
+      `[perplex/queries] ${context}: ${String(pg.message)} (code ${String(pg.code)})${pg.details ? ` — ${String(pg.details)}` : ''}`
+    );
+    return;
+  }
+  console.error(`[perplex/queries] ${context}: ${String(error)}`);
 }
 
 export function mapWalletRow(row: WalletRow): WalletProfile {
@@ -376,7 +388,10 @@ export async function upsertWalletProfile(profile: WalletProfile): Promise<boole
       avg_hold_seconds: profile.avgHoldSeconds,
       longest_win_streak: profile.longestWinStreak,
       longest_loss_streak: profile.longestLossStreak,
-      max_drawdown: profile.maxDrawdown,
+      // max_drawdown is numeric(8,4) in the seeded schema (±9,999.9999 max).
+      // Clamp at the write boundary: an oversized value used to reject the
+      // whole wallet row and cascade into FK failures on trades/flows.
+      max_drawdown: Math.min(Math.max(profile.maxDrawdown, -9999.9999), 9999.9999),
       profit_factor: profile.profitFactor,
       behavior_tags: profile.behaviorTags,
       primary_markets: profile.primaryMarkets,

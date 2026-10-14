@@ -13,6 +13,7 @@ import LiquidationMapChart from '@/components/liquidation-map/LiquidationMapChar
 import LiquidationMapControls from '@/components/liquidation-map/LiquidationMapControls';
 import LiquidationMapStats from '@/components/liquidation-map/LiquidationMapStats';
 import PositionCluster from '@/components/liquidation-map/PositionCluster';
+import DemoDataBadge from '@/components/ui/DemoDataBadge';
 
 const BUCKET_OPTIONS = ['0.25%', '0.5%', '1%', '2%'] as const;
 
@@ -87,6 +88,7 @@ function LiquidationMapPageInner() {
           <h1 className="flex items-center gap-2 text-[24px] font-bold text-white">
             <MapIcon size={22} className="text-primary" aria-hidden />
             Liquidation Map
+            {data && data.dataSource !== 'live' && <DemoDataBadge />}
           </h1>
           <p className="mt-1 text-[13px] text-textMuted">See where the market breaks</p>
         </div>

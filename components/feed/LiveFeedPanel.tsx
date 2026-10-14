@@ -6,6 +6,7 @@ import { Zap } from 'lucide-react';
 import type { FeedEvent } from '@/lib/types';
 import FeedEventCard from '@/components/feed/FeedEvent';
 import LiveDot from '@/components/ui/LiveDot';
+import DemoDataBadge from '@/components/ui/DemoDataBadge';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 import { usePerplWebSocket } from '@/lib/perpl/websocket';
 import { FEED_PANEL_MAX, FEED_POLL_INTERVAL, WHALE_THRESHOLD_SIZE } from '@/lib/utils/constants';
@@ -34,13 +35,18 @@ export default function LiveFeedPanel({ max = FEED_PANEL_MAX }: LiveFeedPanelPro
 
   const { events: wsEvents, isConnected } = usePerplWebSocket({ onWhaleDetected });
 
+  const [demoData, setDemoData] = useState(true);
+
   useEffect(() => {
     let cancelled = false;
     const load = async (): Promise<void> => {
       try {
         const res = await fetch(`/api/feed?limit=${max}`);
-        const data = (await res.json()) as { events?: FeedEvent[] };
-        if (!cancelled && data.events) setEvents(data.events);
+        const data = (await res.json()) as { events?: FeedEvent[]; dataSource?: 'live' | 'demo' };
+        if (!cancelled && data.events) {
+          setEvents(data.events);
+          setDemoData(data.dataSource !== 'live');
+        }
       } catch (error) {
         console.error('[LiveFeedPanel]', error);
       } finally {
@@ -70,6 +76,7 @@ export default function LiveFeedPanel({ max = FEED_PANEL_MAX }: LiveFeedPanelPro
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <h3 className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-widest text-textSecondary">
           <Zap size={14} className="text-primary" aria-hidden /> Live Feed
+          {demoData && !isConnected && <DemoDataBadge />}
         </h3>
         <span className="flex items-center gap-1.5 text-[10px] font-semibold text-success">
           <LiveDot /> LIVE

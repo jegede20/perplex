@@ -41,8 +41,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       ? Math.max(minSizeRaw, 0)
       : undefined;
 
-    const events = await getFeedEvents({ limit, market, type, tier, minSize });
-    return NextResponse.json({ events }, {
+    const { events, dataSource } = await getFeedEvents({ limit, market, type, tier, minSize });
+    return NextResponse.json({ events, dataSource }, {
       headers: { 'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=20' },
     });
   } catch (error) {

@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(): Promise<NextResponse> {
   try {
     const wallets = getTrackedWallets();
-    const recentEvents = await getFeedEvents({ limit: 40 });
+    const { events: recentEvents } = await getFeedEvents({ limit: 40 });
     const data: WhaleSentimentData = buildWhaleSentiment(wallets, recentEvents);
 
     return NextResponse.json(data, {

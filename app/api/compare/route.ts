@@ -50,6 +50,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       ...compareWallets(detailA.wallet, detailB.wallet),
       pnlHistoryA: detailA.pnlHistory,
       pnlHistoryB: detailB.pnlHistory,
+      dataSource: detailA.dataSource ?? 'demo',
     };
 
     return NextResponse.json(comparison, {

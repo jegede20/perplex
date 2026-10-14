@@ -53,6 +53,18 @@ export function netFlowInWindow(flows: WalletFlow[], hours: number): number {
 
 // ─── deterministic demo flow generation ────────────────────────────
 
+/** Hex string of `n` digits drawn one at a time from `rng`. Digit-by-digit
+ *  keeps every digit exact — `Math.floor(rng() * 16 ** n)` silently zeroes
+ *  the low digits for n > 13 (past the 53-bit float mantissa), which made
+ *  synthetic addresses and tx hashes end in zeros. */
+function hexDigits(rng: () => number, n: number): string {
+  let out = '';
+  for (let i = 0; i < n; i += 1) {
+    out += Math.floor(rng() * 16).toString(16);
+  }
+  return out;
+}
+
 function mulberry32(seed: number): () => number {
   let a = seed >>> 0;
   return () => {
@@ -107,7 +119,7 @@ export function generateDemoWalletFlows(
       id: `flow_${walletAddress.slice(2, 10)}_${i}`,
       type: isDeposit ? 'DEPOSIT' : 'WITHDRAWAL',
       amount,
-      txHash: `0x${Math.floor(rng() * 1e16).toString(16).padStart(16, '0')}${Math.floor(rng() * 1e16).toString(16).padStart(16, '0')}${Math.floor(rng() * 1e8).toString(16).padStart(8, '0')}`,
+      txHash: `0x${hexDigits(rng, 64)}`,
       timestamp: new Date(ts).toISOString(),
     });
   }

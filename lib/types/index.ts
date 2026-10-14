@@ -491,13 +491,23 @@ export interface WalletComparison {
   /** cumulative realized PnL series for the comparison chart */
   pnlHistoryA: PnLPoint[];
   pnlHistoryB: PnLPoint[];
+  /** where the underlying profiles came from */
+  dataSource?: DataSource;
 }
 
 // ─── API ENVELOPES ─────────────────────────────────────────────────
 
+/**
+ * Provenance of the rows in a response: 'live' = Perpl API/WS or on-chain
+ * data served in this request; 'demo' = the deterministic seeded dataset
+ * (Supabase rows from `npm run seed` or the in-memory fallback generator).
+ */
+export type DataSource = 'live' | 'demo';
+
 export interface WalletsResponse {
   wallets: WalletSummary[];
   total: number;
+  dataSource?: DataSource;
 }
 
 export interface WalletDetailResponse {
@@ -505,10 +515,12 @@ export interface WalletDetailResponse {
   trades: Trade[];
   pnlHistory: PnLPoint[];
   flows: WalletFlow[];
+  dataSource?: DataSource;
 }
 
 export interface FeedResponse {
   events: FeedEvent[];
+  dataSource?: DataSource;
 }
 
 export interface ApiError {
@@ -560,6 +572,8 @@ export interface LiquidationMapData {
   /** chart X axis max */
   priceRangeMax: number;
   generatedAt: string;
+  /** provenance of the position book: on-chain = 'live', synthetic = 'demo' */
+  dataSource?: DataSource;
 }
 
 export interface CascadeResult {

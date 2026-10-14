@@ -6,6 +6,7 @@ import { Trophy } from 'lucide-react';
 import type { WalletSummary } from '@/lib/types';
 import LeaderboardRow from '@/components/leaderboard/LeaderboardRow';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
+import DemoDataBadge from '@/components/ui/DemoDataBadge';
 import { LEADERBOARD_PAGE_SIZE } from '@/lib/utils/constants';
 
 export interface LeaderboardProps {
@@ -29,6 +30,7 @@ export default function Leaderboard({
   const router = useRouter();
   const [wallets, setWallets] = useState<WalletSummary[]>(walletsProp ?? []);
   const [loading, setLoading] = useState<boolean>(loadingProp ?? walletsProp === undefined);
+  const [demoData, setDemoData] = useState(true);
 
   useEffect(() => {
     if (walletsProp) {
@@ -40,8 +42,11 @@ export default function Leaderboard({
     const load = async (): Promise<void> => {
       try {
         const res = await fetch(`/api/wallets?limit=${limit}&sortBy=smart_money_score`);
-        const data = (await res.json()) as { wallets?: WalletSummary[] };
-        if (!cancelled && data.wallets) setWallets(data.wallets);
+        const data = (await res.json()) as { wallets?: WalletSummary[]; dataSource?: 'live' | 'demo' };
+        if (!cancelled && data.wallets) {
+          setWallets(data.wallets);
+          setDemoData(data.dataSource !== 'live');
+        }
       } catch (error) {
         console.error('[Leaderboard]', error);
       } finally {
@@ -73,6 +78,7 @@ export default function Leaderboard({
         <div className="flex items-center justify-between px-4 pb-2 pt-4">
           <h3 className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-widest text-textSecondary">
             <Trophy size={14} className="text-primary" aria-hidden /> Smart Money Leaderboard
+            {demoData && <DemoDataBadge />}
           </h3>
           {showViewAll && (
             <button

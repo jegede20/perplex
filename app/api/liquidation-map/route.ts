@@ -8,7 +8,7 @@ import {
   synthesizeMarketBook,
   DEFAULT_BUCKET_PERCENT,
 } from '@/lib/liquidation/mapBuilder';
-import type { OpenPosition } from '@/lib/types';
+import type { DataSource, OpenPosition } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -76,8 +76,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     const map = buildLiquidationMap(positions, markPrice, marketParam, bucket);
+    const dataSource: DataSource = onChain && onChain.length > 0 ? 'live' : 'demo';
 
-    return NextResponse.json(map, {
+    return NextResponse.json({ ...map, dataSource }, {
       headers: { 'Cache-Control': 'no-store' },
     });
   } catch (error) {

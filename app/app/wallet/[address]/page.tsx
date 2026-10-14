@@ -20,6 +20,7 @@ import TradeHistory from '@/components/wallet/TradeHistory';
 import WalletFlows from '@/components/wallet/WalletFlows';
 import ErrorBoundary from '@/components/ui/ErrorBoundary';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
+import DemoDataBadge from '@/components/ui/DemoDataBadge';
 import { isValidAddress } from '@/lib/utils/format';
 
 /**
@@ -39,6 +40,7 @@ export default function WalletExplorerPage() {
   const [flows, setFlows] = useState<WalletFlow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [demoData, setDemoData] = useState(true);
 
   useEffect(() => {
     if (!valid) {
@@ -55,6 +57,7 @@ export default function WalletExplorerPage() {
         const data = (await res.json()) as WalletDetailResponse & { error?: string; flows?: WalletFlow[] };
         if (!cancelled) {
           if (data.wallet) {
+            setDemoData(data.dataSource !== 'live');
             setWallet(data.wallet);
             setTrades(data.trades ?? []);
             setPnlHistory(data.pnlHistory ?? []);
@@ -99,6 +102,7 @@ export default function WalletExplorerPage() {
           <span className="tabular font-semibold text-textPrimary">
             {rawAddress ? `${rawAddress.slice(0, 8)}…${rawAddress.slice(-6)}` : '—'}
           </span>
+          {demoData && <DemoDataBadge />}
         </nav>
 
         {/* Search bar to inspect another wallet */}

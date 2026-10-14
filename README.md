@@ -97,6 +97,26 @@ Plus a full marketing **landing page** at `/` (hero, live protocol snapshot, fea
 
 Real Perpl market IDs were verified live: **BTC=1 · MON=10 · ETH=20 · SOL=31 · HYPE=40 · ZEC=50** (each with its own `price_decimals`/`size_decimals` fixed-point scaling).
 
+## 🗂️ Data sources — what's live and what's demo
+
+Perplex is a layered data pipeline: **live Perpl feeds → indexed Supabase rows → deterministic demo dataset**. Every response is served from the freshest source available, and the UI labels provenance.
+
+| Surface | Source | Real? |
+|---|---|---|
+| Protocol stats (volume, OI, fees), open positions, liquidation config | On-chain reads from the Perpl exchange `0x34B6552d57a35a1D042CcAe1951BD1C370112a6F` on Monad mainnet (chain 143) | ✅ Real |
+| Markets, prices, order book | Perpl public API (`/pub/context`, `/pub/book`) | ✅ Real |
+| Wallets, trades, feed events, liquidations, wallet flows, comparisons | Deterministic seeded dataset (`npm run seed`) + in-memory fallback generator | ⚠️ Demo — labeled **"Demo data"** in the UI |
+
+**Why a demo dataset?** Perpl's market-data feeds (`/pub/trades`, `/pub/funding`, `/pub/oi`, `/pub/stats`, `wss://…/ws`) currently return HTTP 451/403 from cloud/datacenter IPs — a legal/geo restriction on Perpl's edge (details in `PERPL-API-ACCESS.md`). With no live trade feed reachable from the hosting environment, the app serves a deterministic seeded dataset so every dashboard stays fully explorable instead of empty.
+
+**Demo rows are synthetic and labeled.** Seeded wallet addresses and tx hashes are generated, not on-chain — they will **not** resolve on a Monad block explorer, by design. Surfaces showing them carry a small **"Demo data"** badge; the tooltip and this section are the disclosure.
+
+**Path to fully live data:** run the ingest/seed pipeline from a network Perpl allows (or once Perpl allowlists the deployment) — indexed rows automatically take priority over the fallback generator, and responses sourced from live feeds report `dataSource: 'live'`, which hides the badge.
+
+## 🤖 AI tools disclosure (Metropolis Rules §4.1.4)
+
+This project was built with the assistance of AI coding tools (agentic pair programming across implementation, tests and QA). All code was reviewed, type-checked (TypeScript strict, zero `any`), and is covered by 79 unit tests. The demo and pitch videos use synthesized audio and an AI-generated voiceover; the video uploads are marked as altered/synthetic content accordingly.
+
 ## 🏗️ Architecture
 
 ```

@@ -59,6 +59,8 @@ import type {
   WalletFlow,
   WalletProfile,
   WalletSummary,
+  FeedResponse,
+  WalletsResponse,
 } from '@/lib/types';
 
 // ═══════════════════════════════════════════════════════════════════
@@ -114,20 +116,24 @@ function hashString(value: string): number {
   return h >>> 0;
 }
 
+/** Hex string of `n` digits drawn one at a time from `rng`. Digit-by-digit
+ *  keeps every digit exact — `Math.floor(rng() * 16 ** n)` silently zeroes
+ *  the low digits for n > 13 (past the 53-bit float mantissa), which made
+ *  synthetic addresses and tx hashes end in zeros. */
+function hexDigits(rng: () => number, n: number): string {
+  let out = '';
+  for (let i = 0; i < n; i += 1) {
+    out += Math.floor(rng() * 16).toString(16);
+  }
+  return out;
+}
+
 function fakeTx(rng: () => number): string {
-  const part = (n: number): string =>
-    Math.floor(rng() * 16 ** n)
-      .toString(16)
-      .padStart(n, '0');
-  return `0x${part(16)}${part(16)}${part(8)}`;
+  return `0x${hexDigits(rng, 64)}`;
 }
 
 function fakeAddress(rng: () => number): string {
-  const part = (n: number): string =>
-    Math.floor(rng() * 16 ** n)
-      .toString(16)
-      .padStart(n, '0');
-  return `0x${part(20)}${part(20)}`;
+  return `0x${hexDigits(rng, 40)}`;
 }
 
 function shortAddress(address: string): string {
@@ -1289,12 +1295,12 @@ export interface LeaderboardOptions {
 
 export async function getLeaderboard(
   options: LeaderboardOptions = {}
-): Promise<{ wallets: WalletSummary[]; total: number }> {
+): Promise<WalletsResponse> {
   const { limit = 20, offset = 0, sortBy = 'smart_money_score', tier, minScore } = options;
 
   const db = await fetchWallets({ limit, offset, sortBy, tier, minScore });
   if (db && db.wallets.length > 0) {
-    return db;
+    return { ...db, dataSource: 'demo' };
   }
 
   const universe = getUniverse();
@@ -1326,6 +1332,7 @@ export async function getLeaderboard(
       openPositionsCount: p.openPositions.length,
     })),
     total: profiles.length,
+    dataSource: 'demo',
   };
 }
 
@@ -1435,7 +1442,7 @@ export async function getWalletDetail(address: string): Promise<WalletDetailResp
 
   persistWalletProfile(profile, dbProfile);
 
-  return { wallet: profile, trades, pnlHistory, flows };
+  return { wallet: profile, trades, pnlHistory, flows, dataSource: 'demo' };
 }
 
 function computeStatsFromTrades(trades: Trade[]): {
@@ -1517,7 +1524,7 @@ export interface FeedFilters {
   minSize?: number;
 }
 
-export async function getFeedEvents(filters: FeedFilters = {}): Promise<FeedEvent[]> {
+export async function getFeedEvents(filters: FeedFilters = {}): Promise<FeedResponse> {
   const { limit = 50, market, tier, type, minSize } = filters;
 
   const db = await fetchFeedEvents({ limit, market, tier, type, minSize });
@@ -1536,7 +1543,7 @@ export async function getFeedEvents(filters: FeedFilters = {}): Promise<FeedEven
     });
   }
 
-  return events.slice(0, limit);
+  return { events: events.slice(0, limit), dataSource: 'demo' };
 }
 
 // ─── exported: sentiment ───────────────────────────────────────────
